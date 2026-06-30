@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>软件实训成果评价报告</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans CJK SC','WenQuanYi Micro Hei','WenQuanYi Zen Hei','Microsoft YaHei','PingFang SC',sans-serif; color:#333; background:#fff; padding:40px 50px; font-size:14px; line-height:1.6; }
+  .page { max-width:900px; margin:0 auto; }
+
+  /* Header */
+  .header { text-align:center; padding-bottom:24px; border-bottom:3px solid #1a6fb5; margin-bottom:28px; }
+  .header h1 { font-size:24px; color:#1a6fb5; letter-spacing:2px; margin-bottom:16px; }
+  .header .meta { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; color:#555; font-size:13px; }
+  .header .meta span { white-space:nowrap; }
+  .header .meta b { color:#333; }
+
+  /* Section */
+  .section { margin-bottom:32px; }
+  .section-title { font-size:16px; color:#1a6fb5; border-left:4px solid #1a6fb5; padding-left:10px; margin-bottom:16px; font-weight:700; }
+
+  /* Score Overview */
+  .overview { display:flex; align-items:center; gap:40px; padding:20px; background:#f5f9fc; border-radius:8px; }
+  .gauge { width:180px; height:180px; flex-shrink:0; }
+  .score-table { flex:1; }
+  .score-table table { width:100%; border-collapse:collapse; }
+  .score-table th, .score-table td { padding:8px 12px; border-bottom:1px solid #e0e8f0; text-align:center; font-size:13px; }
+  .score-table th { background:#e8f0f8; color:#1a6fb5; font-weight:600; }
+  .score-table .dim-total { font-size:16px; font-weight:700; color:#1a6fb5; }
+  .grade-badge { display:inline-block; padding:2px 14px; border-radius:12px; font-weight:700; font-size:13px; color:#fff; }
+  .grade-yx { background:#67c23a; } .grade-lh { background:#409eff; }
+  .grade-zd { background:#e6a23c; } .grade-bj { background:#f56c6c; }
+
+  /* Tables */
+  table.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+  table.data-table th { background:#e8f0f8; color:#1a6fb5; font-weight:600; padding:8px 10px; text-align:center; border:1px solid #d0dbe8; }
+  table.data-table td { padding:8px 10px; text-align:center; border:1px solid #e0e8f0; }
+  table.data-table tr:nth-child(even) td { background:#fafbfd; }
+  .dim-section { margin-bottom:24px; }
+  .dim-header { font-weight:700; font-size:14px; color:#1a6fb5; margin-bottom:8px; padding:6px 12px; background:#f0f5fb; border-radius:4px; }
+  .score-cell { font-weight:600; }
+
+  /* Precheck */
+  .precheck-item { display:inline-flex; align-items:center; gap:6px; margin-right:20px; font-size:13px; }
+  .precheck-pass { color:#67c23a; font-weight:700; }
+  .precheck-fail { color:#f56c6c; font-weight:700; }
+
+  /* Verifications */
+  .verif-table td:nth-child(4) { text-align:left; }
+
+  /* Charts */
+  .chart-box { width:100%; height:320px; margin:16px 0; }
+
+  /* Teacher Comment */
+  .comment-box { padding:20px 24px; background:#fdf8f0; border-left:4px solid #e6a23c; border-radius:4px; font-size:14px; line-height:1.8; color:#555; }
+
+  /* Issues */
+  .issue-group { margin-bottom:16px; }
+  .issue-group h4 { font-size:14px; color:#1a6fb5; margin-bottom:6px; }
+  .issue-item { padding:4px 0 4px 16px; font-size:13px; color:#666; border-left:2px solid #e0e8f0; margin-bottom:4px; }
+
+  /* Footer */
+  .footer { text-align:center; color:#999; font-size:12px; padding-top:24px; border-top:1px solid #e0e8f0; margin-top:32px; }
+
+  /* Stat cards */
+  .stat-cards { display:flex; gap:16px; flex-wrap:wrap; }
+  .stat-card { flex:1; min-width:120px; text-align:center; padding:20px 12px; background:#f5f9fc; border-radius:8px; border:1px solid #e0e8f0; }
+  .stat-val { font-size:28px; font-weight:700; color:#1a6fb5; line-height:1.2; }
+  .stat-label { font-size:12px; color:#909399; margin-top:6px; }
+
+  /* Progress bars */
+  .grade-bars { padding:8px 0; }
+  .grade-row { display:flex; align-items:center; gap:12px; padding:6px 0; }
+  .grade-name { min-width:60px; text-align:right; }
+  .grade-bar-wrap { flex:1; height:18px; background:#e8f0f8; border-radius:9px; overflow:hidden; }
+  .grade-bar-fill { height:100%; border-radius:9px; background:linear-gradient(90deg,#409eff,#1a6fb5); transition:width 0.3s; }
+  .dim-bar { background:linear-gradient(90deg,#67c23a,#409eff); }
+  .grade-count { min-width:90px; font-size:13px; color:#606266; white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Report data -->
+  <script id="report-data" type="application/json">__REPORT_DATA__</script>
+
+  <div id="report-root"></div>
+  <div class="footer">由实训成果智能评价系统自动生成</div>
+
+</div>
+
+<script>
+  const R = JSON.parse(document.getElementById('report-data').textContent);
+  const root = document.getElementById('report-root');
+
+  function esc(s) { return (s==null)?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function gradeClass(g) {
+    if (g==='优秀') return 'grade-yx'; if (g==='良好') return 'grade-lh';
+    if (g==='中等') return 'grade-zd'; return 'grade-bj';
+  }
+
+  function evalMethodText(m) {
+    return ['纯AI评价','纯人工评价','混合AI+人工评价','逐项自定义评价'][m]||'混合评价';
+  }
+
+  function sc(score) { return score!=null?String(score):'-'; }
+  function nvl(v) { return v!=null&&v!==''?v:''; }
+
+  function render() {
+    try {
+    if (R.type === 'overview') { renderOverview(); } else { renderSingle(); }
+    } catch(e) { console.error('Report render error:', (e?e.message||String(e):'')); window.__CHARTS_READY__ = true; }
+  }
+
+  function renderSingle() {
+    var d = R.date, t = R.task, s = R.summary, v = R.verifications||[], r = R.results||[];
+    var h = '';
+
+    // Header
+    h += '<div class="header">';
+    h += '<h1>软件实训成果评价报告</h1>';
+    h += '<div class="meta">';
+    h += '<span><b>姓名：</b>'+esc(R.studentName)+'</span>';
+    h += '<span><b>任务：</b>'+esc(t.title)+'</span>';
+    if(t.courseName) h += '<span><b>课程：</b>'+esc(t.courseName)+'</span>';
+    h += '<span><b>日期：</b>'+esc(d)+'</span>';
+    h += '<span><b>方式：</b>'+evalMethodText(R.evalMethod)+'</span>';
+    h += '</div></div>';
+
+    // Section 1: Score Overview
+    h += '<div class="section"><div class="section-title">一、评分总览</div>';
+    h += '<div class="overview"><div class="gauge" id="gauge-chart"></div><div class="score-table"><table><thead><tr>';
+    h += '<th>评价维度</th><th>维度得分</th><th>权重</th><th>加权得分</th></tr></thead><tbody>';
+    h += buildDim('完成度',s.completionScore,t.weightCompletion);
+    h += buildDim('技术质量',s.techScore,t.weightTech);
+    h += buildDim('创新',s.innovationScore,t.weightInnovation);
+    h += buildDim('文档',s.documentScore,t.weightDocument);
+    h += '<tr style="background:#e8f0f8"><td><b>综合总分</b></td><td class="dim-total" colspan="2">'+sc(s.totalScore)+'</td>';
+    h += '<td><span class="grade-badge '+gradeClass(s.grade)+'">'+esc(s.grade)+'</span></td></tr>';
+    h += '</tbody></table></div></div></div>';
+
+    // Section 2: Radar Chart
+    h += '<div class="section"><div class="section-title">二、维度雷达图</div>';
+    h += '<div class="chart-box" id="radar-chart"></div></div>';
+
+    // Section 3-6: Indicator scores by dimension
+    var dims = ['completion','tech','innovation','document'];
+    var dimNames = {'completion':'三、完成度评价','tech':'四、技术质量评价','innovation':'五、创新评价','document':'六、文档评价'};
+    var dimWeights = {'completion':t.weightCompletion,'tech':t.weightTech,'innovation':t.weightInnovation,'document':t.weightDocument};
+    for(var di=0; di<dims.length; di++) {
+      var dim = dims[di];
+      var items = r.filter(function(x){ return x.dimension===dim; });
+      if(!items.length) continue;
+      h += '<div class="section"><div class="section-title">'+dimNames[dim]+'</div>';
+      h += '<div class="dim-header">权重合计 '+(dimWeights[dim]*100).toFixed(0)+'%</div>';
+      h += '<table class="data-table"><thead><tr><th>指标</th><th>权重</th><th>AI评分</th><th>教师评分</th><th>最终得分</th></tr></thead><tbody>';
+      for(var ii=0; ii<items.length; ii++) {
+        var x = items[ii];
+        h += '<tr><td style="text-align:left;padding-left:12px">'+esc(x.indicatorName)+'</td>';
+        h += '<td>'+((x.weight||0).toFixed(0))+'%</td>';
+        h += '<td>'+sc(x.autoScore)+'</td><td>'+sc(x.manualScore)+'</td><td class="score-cell">'+sc(x.finalScore)+'</td></tr>';
+      }
+      h += '</tbody></table></div>';
+    }
+
+    // Section 7: Teacher Comment
+    if(R.teacherComment) {
+      h += '<div class="section"><div class="section-title">七、教师综合评价</div>';
+      h += '<div class="comment-box">'+R.teacherComment.replace(/\n/g,'<br>')+'</div></div>';
+    }
+
+    // Section 8: Issues & Suggestions
+    var issues = {}, parts;
+    for(var ri=0; ri<r.length; ri++) {
+      var x = r[ri];
+      if(!x.dimension || x.dimension==='precheck') continue;
+      parts = [];
+      if(x.autoComment) parts.push(x.autoComment);
+      if(x.manualComment) parts.push(x.manualComment);
+      if(x.adjustReason) parts.push(x.adjustReason);
+      if(parts.length) {
+        if(!issues[x.dimension]) issues[x.dimension]=[];
+        issues[x.dimension] = issues[x.dimension].concat(parts);
+      }
+    }
+    var dimLabel = {'completion':'完成度','tech':'技术质量','innovation':'创新','document':'文档'};
+    var keys = Object.keys(issues);
+    if(keys.length) {
+      h += '<div class="section"><div class="section-title">八、存在问题与改进建议</div>';
+      for(var ki=0; ki<keys.length; ki++) {
+        var dimK = keys[ki];
+        h += '<div class="issue-group"><h4>'+dimLabel[dimK]+'</h4>';
+        for(var pi=0; pi<issues[dimK].length; pi++) h += '<div class="issue-item">'+esc(issues[dimK][pi])+'</div>';
+        h += '</div>';
+      }
+      h += '</div>';
+    }
+
+    root.innerHTML = '';
+    window.__REPORT_HTML__ = h;
+
+    if (typeof echarts !== 'undefined') {
+      try {
+        var gDiv = document.createElement('div'); gDiv.id = 'gauge-chart'; gDiv.style.width = '180px'; gDiv.style.height = '180px';
+        echarts.init(gDiv).setOption({
+          series:[{type:'gauge',startAngle:210,endAngle:-30,center:['50%','55%'],radius:'90%',
+            min:0,max:100,splitNumber:4,
+            axisLine:{lineStyle:{width:8,color:[[0.3,'#f56c6c'],[0.6,'#e6a23c'],[0.75,'#409eff'],[1,'#67c23a']]}},
+            pointer:{length:'60%',width:6,itemStyle:{color:'auto'}},
+            detail:{valueAnimation:false,formatter:'{value}',fontSize:32,offsetCenter:[0,'70%']},
+            data:[{value:R.summary?.totalScore||0,name:R.summary?.grade||''}]
+          }]
+        });
+        var rDiv = document.createElement('div'); rDiv.id = 'radar-chart'; rDiv.style.width = '600px'; rDiv.style.height = '320px';
+        echarts.init(rDiv).setOption({
+          radar:{center:['50%','55%'],radius:'65%',
+            indicator:[{name:'完成度',max:100},{name:'技术质量',max:100},{name:'创新',max:100},{name:'文档',max:100}],
+            axisName:{fontSize:13}
+          },
+          series:[{type:'radar',
+            data:[{value:[R.summary?.completionScore||0,R.summary?.techScore||0,R.summary?.innovationScore||0,R.summary?.documentScore||0],name:'得分'}],
+            symbol:'circle',symbolSize:5,lineStyle:{width:2,color:'#1a6fb5'},itemStyle:{color:'#1a6fb5'}
+          }]
+        });
+      } catch(e) {}
+    }
+    window.__CHARTS_READY__ = true;
+  }
+
+  function buildDim(name,score,weight) {
+    var w = weight!=null?Number(weight):0;
+    return '<tr><td style="font-weight:600">'+name+'</td><td>'+sc(score)+'</td><td>'+w.toFixed(2)+'</td><td>'+((score!=null?score*w:0).toFixed(2))+'</td></tr>';
+  }
+
+  function renderOverview() {
+    root.innerHTML = '';
+    var d = R.date, t = R.task||{}, stats = R.studentStats||[], ds = R.dimScores||{}, scores = R.allScores||[];
+    var i, j, x, g, c, total, avg, max, min, vals, sum, pct;
+
+    var html = '';
+    // Header
+    html += '<div class="header">';
+    html += '<h1>' + (t.title||'') + ' 任务总览报表</h1>';
+    html += '<div class="meta">';
+    html += '<span><b>课程：</b>' + (t.courseName||'') + '</span>';
+    html += '<span><b>日期：</b>' + d + '</span>';
+    html += '<span><b>提交数：</b>' + stats.length + '</span>';
+    html += '</div></div>';
+
+    if(!stats.length){ window.__REPORT_HTML__ = '<p style="text-align:center;padding:40px;color:#999">暂无数据</p>'; window.__CHARTS_READY__=true; return; }
+
+    // compute stats
+    total=0; for(i=0;i<scores.length;i++) total+=scores[i];
+    avg=scores.length?(total/scores.length):0;
+    max=Math.max.apply(null,scores);
+    min=Math.min.apply(null,scores);
+
+    // Section 1: Overview cards
+    html += '<div class="section"><div class="section-title">一、整体概况</div>';
+    html += '<div class="stat-cards">';
+    var cards=[{l:'提交人数',v:stats.length},{l:'平均分',v:avg.toFixed(1)},{l:'最高分',v:max.toFixed(1)},{l:'最低分',v:min.toFixed(1)}];
+    for(i=0;i<cards.length;i++) html += '<div class="stat-card"><div class="stat-val">'+cards[i].v+'</div><div class="stat-label">'+cards[i].l+'</div></div>';
+    html += '</div></div>';
+
+    // Section 2: Grade distribution ring chart
+    html += '<div class="section"><div class="section-title">二、成绩分布</div>';
+    html += '<div class="chart-box" id="overview-pie" style="height:340px"></div></div>';
+
+    // Section 3: Dimension averages bar chart
+    html += '<div class="section"><div class="section-title">三、各维度平均得分</div>';
+    html += '<div class="chart-box" id="overview-bar" style="height:280px"></div></div>';
+
+    // Section 4: Student rankings (sorted by score desc)
+    var sorted=stats.slice().sort(function(a,b){ return (b.totalScore||0)-(a.totalScore||0); });
+    html += '<div class="section"><div class="section-title">四、学生成绩排名</div>';
+    html += '<table class="data-table"><thead><tr><th>排名</th><th>学生</th><th>总分</th><th>等级</th><th>提交时间</th></tr></thead><tbody>';
+    for(i=0;i<sorted.length;i++){
+      x=sorted[i];
+      html += '<tr>';
+      html += '<td>'+(i+1)+'</td>';
+      html += '<td style="text-align:left;padding-left:12px">'+x.studentName+'</td>';
+      html += '<td class="score-cell">'+(x.totalScore!=null?x.totalScore:'-')+'</td>';
+      html += '<td><span class="grade-badge '+gradeClass(x.grade)+'">'+(x.grade||'')+'</span></td>';
+      html += '<td>'+(x.submitTime||'-')+'</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+
+    root.innerHTML = '';
+    window.__REPORT_HTML__ = html;
+
+    if (typeof echarts !== 'undefined') {
+      try {
+        // Ring chart
+        var pieDiv = document.createElement('div'); pieDiv.id = 'overview-pie'; pieDiv.style.width = '600px'; pieDiv.style.height = '340px';
+        var gc = { '优秀': 0, '良好': 0, '中等': 0, '不及格': 0 };
+        for (var gi = 0; gi < stats.length; gi++) { var gg = stats[gi].grade; if (gg && gc[gg] !== undefined) gc[gg]++; }
+        var pieData = [];
+        if (gc['优秀']) pieData.push({ value: gc['优秀'], name: '优秀', itemStyle: { color: '#67c23a' } });
+        if (gc['良好']) pieData.push({ value: gc['良好'], name: '良好', itemStyle: { color: '#409eff' } });
+        if (gc['中等']) pieData.push({ value: gc['中等'], name: '中等', itemStyle: { color: '#e6a23c' } });
+        if (gc['不及格']) pieData.push({ value: gc['不及格'], name: '不及格', itemStyle: { color: '#f56c6c' } });
+        echarts.init(pieDiv).setOption({
+          tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
+          legend: { bottom: 8, data: pieData.map(function (d) { return d.name; }) },
+          series: [{ type: 'pie', radius: ['45%', '70%'], center: ['50%', '48%'],
+            label: { formatter: '{b}\n{d}%', fontSize: 12 },
+            labelLine: { length: 16, length2: 20 }, data: pieData }]
+        });
+        // Bar chart
+        var barDiv = document.createElement('div'); barDiv.id = 'overview-bar'; barDiv.style.width = '600px'; barDiv.style.height = '280px';
+        var dims = [['completion', '完成度', '#1a6fb5'], ['tech', '技术质量', '#409eff'], ['innovation', '创新', '#67c23a'], ['document', '文档', '#e6a23c']];
+        var barData = [];
+        for (var di = 0; di < dims.length; di++) {
+          var vals = ds[dims[di][0]] || [], sum = 0;
+          for (var vj = 0; vj < vals.length; vj++) sum += vals[vj];
+          barData.push({ value: +((vals.length ? sum / vals.length : 0)).toFixed(1), name: dims[di][1], itemStyle: { color: dims[di][2] } });
+        }
+        barData.sort(function (a, b) { return b.value - a.value; });
+        echarts.init(barDiv).setOption({
+          tooltip: { trigger: 'axis', formatter: '{b}: {c}' },
+          grid: { left: 100, right: 50, top: 10, bottom: 20 },
+          xAxis: { max: 100, axisLabel: { formatter: '{value}' } },
+          yAxis: { type: 'category', data: barData.map(function (d) { return d.name; }), inverse: true,
+            axisLabel: { fontSize: 13 } },
+          series: [{ type: 'bar', barWidth: 22, label: { show: true, position: 'right', fontSize: 13, fontWeight: 'bold' },
+            data: barData }]
+        });
+      } catch(e) {}
+      window.__CHARTS_READY__ = true;
+    } else {
+      window.__CHARTS_READY__ = true;
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>

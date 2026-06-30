@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.evaluation.mapper.DashboardMapper">
+
+    <!-- 学生统计数据 -->
+    <select id="countStudentFavoriteTasks" resultType="int">
+        SELECT COUNT(*) FROM favorite_task f
+        JOIN training_task t ON f.task_id = t.id
+        WHERE f.user_id = #{userId} AND t.deleted = 0
+    </select>
+
+    <select id="countStudentSubmissions" resultType="int">
+        SELECT COUNT(*) FROM submission s
+        WHERE s.deleted = 0 AND s.student_id = #{userId}
+    </select>
+
+    <select id="countStudentEvaluated" resultType="int">
+        SELECT COUNT(*) FROM submission s
+        WHERE s.deleted = 0 AND s.student_id = #{userId} AND s.approval_status = 2
+    </select>
+
+    <!-- 教师统计数据 -->
+    <select id="countAllTasks" resultType="int">
+        SELECT COUNT(*) FROM training_task WHERE deleted = 0
+    </select>
+
+    <select id="countAllSubmissions" resultType="int">
+        SELECT COUNT(*) FROM submission WHERE deleted = 0
+    </select>
+
+    <select id="countVerifiedSubmissions" resultType="int">
+        SELECT COUNT(DISTINCT submission_id) FROM verification_result
+    </select>
+
+    <select id="countEvaluatedSubmissions" resultType="int">
+        SELECT COUNT(*) FROM submission WHERE deleted = 0 AND approval_status = 2
+    </select>
+
+    <!-- 状态统计 -->
+    <select id="countPublishedTasks" resultType="int">
+        SELECT COUNT(*) FROM training_task WHERE deleted = 0 AND status = 1
+    </select>
+
+    <select id="countExpiredTasks" resultType="int">
+        SELECT COUNT(*) FROM training_task
+        WHERE deleted = 0 AND deadline IS NOT NULL AND deadline &lt; NOW()
+    </select>
+
+    <select id="countPendingReviewSubmissions" resultType="int">
+        SELECT COUNT(*) FROM submission s
+        WHERE s.deleted = 0
+        AND s.id NOT IN (SELECT DISTINCT submission_id FROM evaluation_result)
+    </select>
+
+    <!-- 最近任务 - 学生 -->
+    <select id="selectRecentTasksForStudent" resultType="java.util.HashMap">
+        SELECT t.id, t.title, t.subject, t.status, t.deadline, t.create_time
+        FROM training_task t JOIN favorite_task f ON t.id = f.task_id
+        WHERE t.deleted = 0 AND f.user_id = #{userId}
+        ORDER BY f.create_time DESC LIMIT 5
+    </select>
+
+    <!-- 最近任务 - 教师 -->
+    <select id="selectRecentTasksForTeacher" resultType="java.util.HashMap">
+        SELECT t.id, t.title, t.subject, t.status, t.deadline, t.create_time,
+               COALESCE(s.sub_cnt, 0) AS submissionCount,
+               COALESCE(e.eval_cnt, 0) AS evaluatedCount
+        FROM training_task t
+        LEFT JOIN (
+            SELECT task_id, COUNT(*) AS sub_cnt FROM submission WHERE deleted = 0 GROUP BY task_id
+        ) s ON t.id = s.task_id
+        LEFT JOIN (
+            SELECT task_id, COUNT(*) AS eval_cnt
+            FROM submission WHERE deleted = 0 AND approval_status = 2 GROUP BY task_id
+        ) e ON t.id = e.task_id
+        WHERE t.deleted = 0
+        ORDER BY t.create_time DESC LIMIT 5
+    </select>
+
+    <!-- 最近提交 - 学生 -->
+    <select id="selectRecentSubmissionsForStudent" resultType="java.util.HashMap">
+        SELECT s.id, s.submit_time, t.title AS task_title
+        FROM submission s
+        LEFT JOIN training_task t ON s.task_id = t.id
+        WHERE s.deleted = 0 AND s.student_id = #{userId}
+        ORDER BY s.create_time DESC LIMIT 5
+    </select>
+
+    <!-- 最近提交 - 教师 -->
+    <select id="selectRecentSubmissionsForTeacher" resultType="java.util.HashMap">
+        SELECT s.id, s.submit_time, t.title AS task_title,
+               COALESCE(u.real_name, '') AS student_name
+        FROM submission s
+        LEFT JOIN training_task t ON s.task_id = t.id
+        LEFT JOIN sys_user u ON s.student_id = u.id
+        WHERE s.deleted = 0
+        ORDER BY s.create_time DESC LIMIT 5
+    </select>
+
+</mapper>

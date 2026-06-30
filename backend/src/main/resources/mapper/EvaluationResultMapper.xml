@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.evaluation.mapper.EvaluationResultMapper">
+
+    <select id="selectByThreeKeys" resultType="com.example.evaluation.entity.EvaluationResult">
+        SELECT * FROM evaluation_result
+        WHERE submission_id = #{submissionId}
+          AND template_id = #{templateId}
+          AND indicator_id = #{indicatorId}
+    </select>
+
+    <select id="countBySubmissionId" resultType="long">
+        SELECT COUNT(*) FROM evaluation_result WHERE submission_id = #{submissionId}
+    </select>
+
+    <select id="selectBySubmissionId" resultType="com.example.evaluation.entity.EvaluationResult">
+        SELECT * FROM evaluation_result
+        WHERE submission_id = #{submissionId}
+        <if test="templateId != null">
+            AND template_id = #{templateId}
+        </if>
+    </select>
+
+    <select id="selectTemplateIdBySubmissionId" resultType="long">
+        SELECT template_id FROM evaluation_result
+        WHERE submission_id = #{submissionId}
+        LIMIT 1
+    </select>
+
+    <delete id="deleteByTemplateId">
+        DELETE FROM evaluation_result WHERE template_id = #{templateId}
+    </delete>
+
+    <delete id="deleteBySubmissionIdAndTemplateId">
+        DELETE FROM evaluation_result
+        WHERE submission_id = #{submissionId} AND template_id = #{templateId}
+    </delete>
+
+</mapper>

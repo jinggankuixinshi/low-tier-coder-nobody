@@ -1,0 +1,9 @@
+/* 报表页面专用字体：自托管 Noto Sans CJK SC（OFL）。
+   仅在报表相关页面引入，按需加载，保证网页报表与后端 PDF/SVG 图表字体一致。 */
+@font-face {
+  font-family: 'Noto Sans CJK SC';
+  src: url('/fonts/NotoSansCJKsc-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

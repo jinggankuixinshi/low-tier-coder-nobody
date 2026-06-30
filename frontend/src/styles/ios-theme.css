@@ -1,0 +1,81 @@
+/* ============================================================
+ * 全局 iOS 风格主题
+ * 设计基准：评价详细页 .ios-dim-card 卡片体系
+ * 纯 CSS、无毛玻璃/backdrop-filter、无新增依赖 —— 兼容 LoongArch + 麒麟 V11
+ * 全局覆盖 el-card 使全站卡片统一为 iOS 风格 + 轻量全局主题
+ * ============================================================ */
+
+:root {
+  /* 背景 */
+  --ios-bg: #f2f2f7;
+  --ios-card-bg: #ffffff;
+  --ios-fill: #f7f7fa;
+  --ios-fill-2: #f2f2f7;
+  --ios-hairline: #f0f0f3;
+
+  /* 卡片 */
+  --ios-card-radius: 16px;
+  --ios-card-border: #ececf1;
+  --ios-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.04);
+  --ios-card-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.06), 0 10px 28px rgba(0, 0, 0, 0.08);
+
+  /* 圆角 */
+  --ios-radius-sm: 10px;
+  --ios-radius-pill: 20px;
+
+  /* 文字色 */
+  --ios-label: #1c1c1e;
+  --ios-label-2: #8e8e93;
+  --ios-label-3: #aeaeb2;
+
+  /* 强调色 */
+  --ios-blue: #007aff;
+  --ios-orange: #ff9500;
+}
+
+/* ============== 卡片：全站 el-card 统一为 iOS 风格 ============== */
+.el-card {
+  --el-card-border-radius: var(--ios-card-radius);
+  --el-card-border-color: var(--ios-card-border);
+  --el-card-padding: 18px;
+  border-radius: var(--ios-card-radius);
+  border: 1px solid var(--ios-card-border);
+  box-shadow: var(--ios-card-shadow) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.el-card.is-hover-shadow:hover {
+  box-shadow: var(--ios-card-shadow-hover) !important;
+}
+.el-card__header {
+  border-bottom: 1px solid var(--ios-hairline);
+  color: var(--ios-label);
+  font-weight: 600;
+}
+
+/* ============== 轻量全局主题：圆角控件对齐 iOS ============== */
+.el-button:not(.is-circle):not(.is-round) {
+  border-radius: var(--ios-radius-sm);
+}
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper,
+.el-input-number {
+  border-radius: var(--ios-radius-sm);
+}
+.el-tag {
+  border-radius: 8px;
+}
+.el-dialog {
+  border-radius: var(--ios-card-radius);
+  overflow: hidden;
+}
+.el-message-box {
+  border-radius: var(--ios-card-radius);
+}
+
+/* ============== 报告页样式保护（不改报表风格） ============== */
+/* ReportView 报告/报表展示页：中和全局主题对其标签的圆角影响，保持报告原有外观。
+ * 本文件为全局样式（非 scoped），直接用后代选择器即可命中报告页内的标签。 */
+.report-view .el-tag {
+  border-radius: 4px;
+}

@@ -1,0 +1,123 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: evaluation-system
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/evaluation_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: ${DB_PASSWORD:CHANGE_ME_DB_PASSWORD}
+
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 2048MB
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.example.evaluation.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# JWT 配置
+jwt:
+  secret: CHANGE_ME_GENERATE_WITH_openssl_rand_-base64_64
+  expiration: 7200000
+  header: Authorization
+  prefix: Bearer 
+
+# 文件上传配置
+file:
+  upload:
+    root-path: ${user.home}/evaluation-data
+    upload-dir: uploads
+    extract-dir: extracted
+    max-file-size: 500
+    allowed-types:
+      - .doc
+      - .docx
+      - .pdf
+      - .ppt
+      - .pptx
+      - .xls
+      - .xlsx
+      - .zip
+      - .rar
+      - .7z
+      - .tar
+      - .gz
+      - .tgz
+      - .mp4
+      - .avi
+      - .mov
+      - .wmv
+      - .webm
+      - .png
+      - .jpg
+      - .jpeg
+      - .gif
+      - .bmp
+      - .txt
+      - .java
+      - .py
+      - .js
+      - .ts
+      - .cpp
+      - .c
+      - .h
+      - .html
+      - .css
+      - .xml
+      - .json
+      - .md
+      - .yml
+      - .yaml
+      - .sql
+      - .sh
+      - .bat
+      - .vue
+      - .go
+      - .rs
+
+# AI 服务配置
+# provider: cloud(云端API) / local(本地Ollama)
+ai:
+  provider: cloud
+  timeout: 120
+  cloud:
+    base-url: ${AI_BASE_URL:https://open.bigmodel.cn/api/paas/v4}
+    api-key: ${AI_API_KEY:CHANGE_ME_GET_FROM_bigmodel_cn}
+    model: ${AI_MODEL:CHANGE_ME_MODEL_NAME}
+    vision-model: ${AI_VISION_MODEL:CHANGE_ME_VISION_MODEL_NAME}
+  local:
+    base-url: http://localhost:11434/v1
+    model: CHANGE_ME_LOCAL_MODEL_NAME
+
+# 图表渲染服务配置
+render:
+  script:
+    path: chart-render-service
+
+# 应用配置
+app:
+  teacher-invite-code: ${TEACHER_INVITE_CODE:jiaoshi}
+
+# 日志配置
+logging:
+  level:
+    com.example.evaluation: DEBUG
+    root: INFO

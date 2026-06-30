@@ -1,0 +1,49 @@
+spring:
+  profiles:
+    active: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:evaluation_test;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: false
+  sql:
+    init:
+      mode: never
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.example.evaluation.entity
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RpbmctcHVycG9zZXMtb25seQ==
+  expiration: 7200000
+  header: Authorization
+  prefix: Bearer
+
+ai:
+  provider: cloud
+  timeout: 120
+  cloud:
+    base-url: https://open.bigmodel.cn/api/paas/v4
+    api-key: test-api-key
+    model: glm-4-flash
+
+render:
+  script:
+    path: /tmp/test-chart-render
+
+app:
+  teacher-invite-code: jiaoshi
+
+logging:
+  level:
+    com.example.evaluation: DEBUG
+    root: WARN

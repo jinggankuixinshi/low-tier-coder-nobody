@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.evaluation.mapper.EvaluationIndicatorMapper">
+
+    <select id="selectByTemplateId" resultType="com.example.evaluation.entity.EvaluationIndicator">
+        SELECT * FROM evaluation_indicator
+        WHERE template_id = #{templateId}
+        ORDER BY sort_order ASC
+    </select>
+
+    <select id="selectIdsByTemplateId" resultType="long">
+        SELECT id FROM evaluation_indicator WHERE template_id = #{templateId}
+    </select>
+
+    <delete id="deleteByTemplateId">
+        DELETE FROM evaluation_indicator WHERE template_id = #{templateId}
+    </delete>
+
+</mapper>

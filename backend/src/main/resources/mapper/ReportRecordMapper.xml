@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.evaluation.mapper.ReportRecordMapper">
+
+    <select id="selectByTaskId" resultType="com.example.evaluation.entity.ReportRecord">
+        SELECT * FROM report_record
+        <where>
+            deleted = 0
+            <if test="taskId != null">
+                AND task_id = #{taskId}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectBySubmissionId" resultType="com.example.evaluation.entity.ReportRecord">
+        SELECT * FROM report_record
+        WHERE submission_id = #{submissionId} AND deleted = 0
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <select id="selectByTaskIdAndType" resultType="com.example.evaluation.entity.ReportRecord">
+        SELECT * FROM report_record
+        WHERE task_id = #{taskId} AND report_type = #{reportType} AND deleted = 0
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <delete id="deletePhysically">
+        DELETE FROM report_record WHERE id = #{id}
+    </delete>
+
+</mapper>

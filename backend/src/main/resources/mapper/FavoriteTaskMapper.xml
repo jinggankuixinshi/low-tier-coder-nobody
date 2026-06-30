@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.evaluation.mapper.FavoriteTaskMapper">
+
+    <select id="selectByUserIdAndTaskId" resultType="com.example.evaluation.entity.FavoriteTask">
+        SELECT * FROM favorite_task WHERE user_id = #{userId} AND task_id = #{taskId}
+    </select>
+
+    <select id="selectByUserId" resultType="com.example.evaluation.entity.FavoriteTask">
+        SELECT * FROM favorite_task WHERE user_id = #{userId}
+    </select>
+
+</mapper>

@@ -1,0 +1,10 @@
+#version 1.0
+请分析这张图片内容，按以下JSON格式返回：
+{"description":"图片整体描述","text":"图片中的文字内容（OCR提取）","isScreenshot":true,"isCode":false,"isUI":false,"codeContent":"如果是代码截图，提取代码","outputContent":"如果是运行结果截图，描述结果"}
+
+分析要点：
+1. 代码截图：提取所有可见代码
+2. 运行结果：分析输出是否符合预期
+3. UI截图：描述界面布局、功能模块
+4. 流程图：分析架构和逻辑关系
+5. 直接返回JSON

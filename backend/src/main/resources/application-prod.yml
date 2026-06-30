@@ -1,0 +1,36 @@
+# ============================================================
+# 生产环境配置 — 通过 SPRING_PROFILES_ACTIVE=prod 激活
+# 外置于 /opt/evaluation/app/config/application.yml
+# 优先级高于 JAR 包内 application.yml 和 application-prod.yml
+# ============================================================
+
+spring:
+  datasource:
+    username: ${DB_USERNAME:evaluation}
+    password: ${DB_PASSWORD}
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+file:
+  upload:
+    root-path: /opt/evaluation/data
+
+ai:
+  cloud:
+    base-url: ${AI_BASE_URL:https://open.bigmodel.cn/api/paas/v4}
+    api-key: ${AI_API_KEY}
+    model: ${AI_MODEL:glm-4-flash}
+    vision-model: ${AI_VISION_MODEL:glm-4v-flash}
+
+render:
+  script:
+    path: /opt/evaluation/chart-render-service
+
+logging:
+  level:
+    com.example.evaluation: INFO
+    root: WARN
+  file:
+    path: /opt/evaluation/logs

@@ -1,0 +1,4 @@
+Noto Sans CJK SC (NotoSansCJKsc-Regular) 字体遵循 SIL Open Font License 1.1 (OFL-1.1)。
+Copyright Google Inc. / Adobe.
+许可证全文见 https://scripts.sil.org/OFL
+该字体可自由分发、嵌入与随软件一起部署。
